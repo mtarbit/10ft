@@ -1,0 +1,16 @@
+<% var isSubDir = (filesPath && filesPath != '/'); %>
+
+<h1>Files <% if (isSubDir) { %>in <em><%= filesPath %></em><% } %></h1>
+
+<% if (isSubDir) { %>
+    <p><a href="/show/<%= join(filesPath, '..') %>">&larr; Back</a></p>
+<% } %>
+
+<ul>
+    <% for (var i = 0; i < files.length; i++) { %>
+        <% var file = files[i]; %>
+        <% if (file.match(/^[^.]/)) { %>
+            <li><a href="/show/<%= join(filesPath, file) %>"><%= file %></a></li>
+        <% } %>
+    <% } %>
+</ul>
