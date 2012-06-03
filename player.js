@@ -1,5 +1,6 @@
 var child_process = require('child_process'),
     platform = require('os').platform(),
+    semver = require('semver'),
     http = require('http'),
     qs = require('querystring');
 
@@ -11,9 +12,9 @@ vlc.httpHost = '127.0.0.1';
 vlc.httpPort = '8080';
 
 vlc.platformCmds = {
-    'darwin':   '/Applications/VLC.app/Contents/MacOS/VLC',
-    'linux':    'vlc',
-    'windows':  'C:/Program Files/VideoLAN/VLC/vlc.exe'
+    darwin: '/Applications/VLC.app/Contents/MacOS/VLC',
+    linux: 'vlc',
+    win32: 'C:/Program Files/VideoLAN/VLC/vlc.exe'
 }
 
 vlc.defaultCmdArgs = [
@@ -21,31 +22,70 @@ vlc.defaultCmdArgs = [
     '--video-on-top',
     '--no-video-title-show',
     '--extraintf=http',
-    '--http-host=' + vlc.httpHost,
-    '--http-port=' + vlc.httpPort
 ];
 
-vlc.__defineGetter__('cmd', function(){
-    return this.platformCmds[platform];
-});
+vlc.init = function(){
+    var self = this;
 
-vlc.__defineGetter__('cmdArgs', function(){
-    var args = this.defaultCmdArgs;
+    this.cmd = this.platformCmds[platform];
+    this.cmdArgs = this.defaultCmdArgs;
+
+    this.initCmdVersion(function(){
+        self.initCmdArgs();
+        self.initCmdProcess();
+    });
+};
+
+vlc.initCmdVersion = function(next){
+    var self = this;
+    child_process.exec(this.cmd + ' --version', function(err, stdout, stderr){
+        if (err !== null) {
+            console.log('exec error: ' + err);
+        } else {
+            // Version info may be in either stream depending on platform.
+            var versionRE = /\b\d\.\d\.\d\b/;
+            var m = stdout.match(versionRE) || stderr.match(versionRE);
+            if (m) self.cmdVersion = m[0];
+            next();
+        }
+    });
+};
+
+vlc.initCmdArgs = function() {
     if (platform == 'linux') {
         // Don't have pulseaudio working on my HTPC,
         // you may not need this if it works for you.
-        args = args.concat(['-A alsa']);
+        this.cmdArgs = this.cmdArgs.concat(['-A alsa']);
     }
+
     if (platform != 'darwin') {
         // Have tried to disable the playlist GUI on OS X in a number 
         // of ways but it always seems to disable the video window too
         // and gives me colour ASCII art output in the terminal instead.
-        args = args.concat(['-I dummy']);
+        this.cmdArgs = this.cmdArgs.concat(['-I dummy']);
     }
-    return args;
-});
 
-vlc.proc = child_process.spawn(vlc.cmd, vlc.cmdArgs);
+    if (semver.gte(this.cmdVersion, '2.0.0')) {
+        this.cmdArgs = this.cmdArgs.concat([
+            '--http-host=' + this.httpHost,
+            '--http-port=' + this.httpPort
+        ]);
+    } else {
+        this.cmdArgs = this.cmdArgs.concat([
+            '--http-host=' + this.httpHost + ':' + this.httpPort
+        ]);
+    }
+};
+
+vlc.initCmdProcess = function() {
+    if (this.process) {
+        console.log('Already running');
+    } else {
+        console.log('Spawning: ', this.cmd);
+        console.log(this.cmdArgs.join("\n"));
+        this.process = child_process.spawn(this.cmd, this.cmdArgs);
+    }
+};
 
 vlc.req = function(query) {
     var path = '/requests/status.xml';
@@ -63,7 +103,7 @@ vlc.req = function(query) {
     });
 
     req.on('error', function(e){
-        console.log('Error while requesting: ' + path + "\n\t" + e.message);
+        console.log('Error: ' + e.message);
     });
 
     req.end();
@@ -79,4 +119,5 @@ vlc.play = function(path){
     });
 };
 
+vlc.init();
 

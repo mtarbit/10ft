@@ -3,7 +3,8 @@ var fs = require('fs'),
     path = require('path'),
     player = require('../player');
 
-var basePath = '/Volumes/External HD-1/Videos';
+// var basePath = '/Volumes/External HD-1/Videos';
+var basePath = '/media/Elements/Videos';
 
 exports.index = function(req, res, next){
     res.redirect('/show/');
