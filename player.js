@@ -43,7 +43,7 @@ vlc.initCmdVersion = function(next){
             console.log('exec error: ' + err);
         } else {
             // Version info may be in either stream depending on platform.
-            var versionRE = /\b\d\.\d\.\d\b/;
+            var versionRE = /\b\d+\.\d+\.\d+\b/;
             var m = stdout.match(versionRE) || stderr.match(versionRE);
             if (m) self.cmdVersion = m[0];
             next();
@@ -109,8 +109,10 @@ vlc.req = function(query) {
     req.end();
 }
 
-// Details of HTTP interface can be found in the VLC source.
-// For version 2.0.1 see /share/lua/http/requests/README.txt
+// Details of HTTP interface can be found in the VLC source:
+//  /share/lua/http/requests/README.txt
+// For a general overview see:
+//  http://detlev.home.xs4all.nl/dpw/2010/talk/vlc-http.pdf
 
 vlc.play = function(path){
     this.req({
