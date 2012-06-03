@@ -15,6 +15,10 @@ Install node package dependencies:
 
     $ npm install
 
+Set the location of your media:
+
+    $ export TEN_FOOT_PATH=/path/to/videos
+
 Start the server:
 
     $ node app
