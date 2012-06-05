@@ -78,12 +78,21 @@ vlc.initCmdArgs = function() {
 };
 
 vlc.initCmdProcess = function() {
+    var self = this;
+
     if (this.process) {
-        console.log('Already running');
+        console.log('Already running player');
     } else {
-        console.log('Spawning: ', this.cmd);
+        console.log('Spawning player: ', this.cmd);
         console.log(this.cmdArgs.join("\n"));
+
         this.process = child_process.spawn(this.cmd, this.cmdArgs);
+
+        process.on('SIGINT', function(){
+            console.log('Cleaning up');
+            self.process.kill('SIGKILL');
+            process.exit();
+        });
     }
 };
 
