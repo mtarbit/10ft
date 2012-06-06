@@ -1,9 +1,9 @@
 {
-    "mediaPath": "/path/to/videos",
-    "twitter": {
-        "consumer_key": "xxxxxxxxxxxxxxxxxxxxxx",
-        "consumer_secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-        "access_token_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-        "access_token_secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-    }
+  "mediaPath": "/path/to/videos"
+, "twitter": {
+    "consumer_key": "xxxxxxxxxxxxxxxxxxxxxx"
+  , "consumer_secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  , "access_token_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  , "access_token_secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  }
 }
