@@ -1,4 +1,4 @@
-var db = require('../db');
+var db = require(appRoot + '/db');
 
 var VideoSchema = new db.Schema({
     id: String

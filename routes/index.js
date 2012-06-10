@@ -1,4 +1,4 @@
-var CONFIG = require('../config')
+var CONFIG = require(appRoot + '/config')
   , request = require('request');
 
 exports.index = function(req, res, next){
@@ -8,7 +8,7 @@ exports.index = function(req, res, next){
 exports.show = function(req, res, next){
   var fs = require('fs')
     , path = require('path')
-    , player = require('../player')
+    , player = require(appRoot + '/lib/player')
     , showPath = req.params[0]
     , fullPath = path.join(CONFIG.mediaPath, showPath);
 
@@ -27,7 +27,7 @@ exports.show = function(req, res, next){
 };
 
 exports.feed = function(req, res, next){
-  var Tweet = require('../models/Tweet');
+  var Tweet = require(appRoot + '/models/Tweet');
 
   Tweet.find().populate('video').limit(10).run(function(err, results){
     if (err) return next(err);
@@ -42,8 +42,8 @@ var YOUTUBE_RE = /^https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)/
   , YOUTUBE_RE_SHORT = /^https?:\/\/youtu\.be\/([\w-]+)/;
 
 function refreshTweets() {
-  var Video = require('../models/video')
-    , Tweet = require('../models/tweet')
+  var Video = require(appRoot + '/models/video')
+    , Tweet = require(appRoot + '/models/tweet')
     , Twitter = require('ntwitter')
     , twitter = new Twitter(CONFIG.twitter);
 

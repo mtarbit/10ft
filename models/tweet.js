@@ -1,4 +1,4 @@
-var db = require('../db');
+var db = require(appRoot + '/db');
 
 var TweetSchema = new db.Schema({
     id: String

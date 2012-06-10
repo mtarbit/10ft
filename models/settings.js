@@ -1,4 +1,4 @@
-var db = require('../db');
+var db = require(appRoot + '/db');
 
 var SettingsSchema = new db.Schema({
     twitterMaxId: String
