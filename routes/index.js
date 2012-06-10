@@ -1,19 +1,16 @@
-
-var fs = require('fs')
-  , path = require('path')
-  , async = require('async')
-  , request = require('request')
-  , player = require('../player')
-  , CONFIG = require('../config')
-  , Twitter = require('ntwitter');
+var CONFIG = require('../config')
+  , request = require('request');
 
 exports.index = function(req, res, next){
   res.redirect('/show/');
 };
 
 exports.show = function(req, res, next){
-  var showPath = req.params[0];
-  var fullPath = path.join(CONFIG.mediaPath, showPath);
+  var fs = require('fs')
+    , path = require('path')
+    , player = require('../player')
+    , showPath = req.params[0]
+    , fullPath = path.join(CONFIG.mediaPath, showPath);
 
   fs.stat(fullPath, function(err, stats) {
     if (err) return next(err);
@@ -30,35 +27,72 @@ exports.show = function(req, res, next){
 };
 
 exports.feed = function(req, res, next){
-  var twitter = new Twitter(CONFIG.twitter);
-  var results = [];
+  var Tweet = require('../models/Tweet');
 
-  twitter.getHomeTimeline({ count: 200, include_entities: true }, function(err, data){
+  Tweet.find().populate('video').limit(10).run(function(err, results){
     if (err) return next(err);
-
-    for (var i = 0; i < data.length; i++) {
-      var status = data[i];
-      if (status.entities.urls.length) {
-        var url = status.entities.urls[0].expanded_url;
-        var id = getYoutubeId(url);
-        if (id) results.push({ status: status, video: { id: id } });
-      }
-    }
-
-    async.map(results, getResultWithVideo, function(err, results){
-      if (err) return next(err);
-      res.render('feed', { results: results });
-    });
+    res.render('feed', { results: results });
   });
-}
 
-var YOUTUBE_RE = /^https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)/;
-var YOUTUBE_RE_SHORT = /^https?:\/\/youtu\.be\/([\w-]+)/;
+  refreshTweets();
+};
 
-function getResultWithVideo(result, callback) {
-  getYoutubeData(result.video.id, function(err, object){
-    result.video = object;
-    callback(err, result);
+
+var YOUTUBE_RE = /^https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)/
+  , YOUTUBE_RE_SHORT = /^https?:\/\/youtu\.be\/([\w-]+)/;
+
+function refreshTweets() {
+  var Video = require('../models/video')
+    , Tweet = require('../models/tweet')
+    , Twitter = require('ntwitter')
+    , twitter = new Twitter(CONFIG.twitter);
+
+  twitter.getHomeTimeline({ count: 200, include_entities: true }, function(err, results){
+
+    results.forEach(function(result){
+      var user = result.user
+        , urls = result.entities.urls
+        , text = result.text;
+
+      if (urls.length) {
+        var id = getYoutubeId(urls[0].expanded_url);
+        if (id) {
+          console.log(id);
+
+          urls.forEach(function(url){
+              text = text.replace(url.url, '<a href="' + url.expanded_url + '">' + url.display_url + '</a>');
+          });
+
+          var tweet = new Tweet({
+              id: result.id
+            , user: user.screen_name
+            , icon: user.profile_image_url
+            , text: result.text
+            , date: result.created_at
+          });
+
+          tweet.save();
+
+          getYoutubeData(id, function(err, result){
+              if (err) return;
+
+              var group = result.entry.media$group;
+              var video = new Video({
+                  id: id
+                , thumb: group.media$thumbnail[0].url
+                , title: group.media$title.$t
+                , description: group.media$description.$t
+              });
+
+              video.save();
+              tweet.video = video._id;
+              tweet.save();
+          });
+
+        }
+      }
+      
+    });
   });
 }
 
@@ -69,6 +103,7 @@ function getYoutubeId(url) {
 
 function getYoutubeData(id, callback) {
   var url = 'http://gdata.youtube.com/feeds/api/videos/' + id + '?v=2&alt=json';
+
   request(url, function(err, res, body){
     try {
       var object = JSON.parse(body);
@@ -79,4 +114,3 @@ function getYoutubeData(id, callback) {
     }
   });
 }
-

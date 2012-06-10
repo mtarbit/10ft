@@ -1,33 +1,13 @@
 <h1>Feed</h1>
 
 <ul>
-    <% for (var i = 0; i < results.length; i++) { %>
-        <%
-
-        var status = results[i].status;
-
-        var user = status.user;
-        var text = status.text;
-        var urls = status.entities.urls;
-
-        var icon_sml = user.profile_image_url;
-        var icon_lrg = icon_sml.replace(/_normal.jpg$/, '_reasonably_small.jpg')
-        
-        for (var j = 0; j < urls.length; j++) {
-            var url = urls[j];
-            text = text.replace(url.url, '<a href="' + url.expanded_url + '">' + url.display_url + '</a>');
-        }
-
-        var video = results[i].video.entry.media$group;
-        var thumb = video.media$thumbnail[0];
-
-        %>
+    <% results.forEach(function(tweet){ %>
         <li class="feed-item">
-            <div class="feed-video-thumb"><img src="<%= thumb.url %>" height="<%= thumb.height %>" width="thumb.width"></div>
-            <div class="feed-video-title"><%= video.media$title.$t %></div>
-            <div class="feed-video-description"><%= video.media$description.$t %></div>
-            <div class="feed-tweet-icon"><img src="<%= icon_sml %>" height="48" width="48"></div> 
-            <div class="feed-tweet-text"><a class="name" href="http://www.twitter.com/<%= user.screen_name %>">@<%= user.screen_name %></a> <span class="text"><%- text %></span></div>
+            <div class="feed-video-thumb"><img src="<%= tweet.video.thumb %>"></div>
+            <div class="feed-video-title"><%= tweet.video.title %></div>
+            <div class="feed-video-description"><%= tweet.video.description %></div>
+            <div class="feed-tweet-icon"><img src="<%= tweet.icon %>" height="48" width="48"></div> 
+            <div class="feed-tweet-text"><a class="name" href="http://www.twitter.com/<%= tweet.user %>">@<%= tweet.user %></a> <span class="text"><%- tweet.text %></span></div>
         </li>
-    <% } %>
+    <% }); %>
 </ul>
