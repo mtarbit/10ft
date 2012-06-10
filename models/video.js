@@ -1,7 +1,7 @@
 var db = require(appRoot + '/db');
 
 var VideoSchema = new db.Schema({
-    id: String
+    id: { type: String, unique: true }
   , thumb: String
   , title: String
   , description: String
