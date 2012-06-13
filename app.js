@@ -35,5 +35,19 @@ app.listen(3000, function(){
 });
 
 
+// Helpers
+
+app.helpers({
+  truncate: function(str, max){
+    var suffix = '...';
+    if (suffix.length < max) max -= suffix.length;
+    return str.substr(0, max).replace(/ +$/, '') + suffix;
+  },
+  truncateWords: function(str, max){
+    var words = str.split(/ +/);
+    return words.slice(0, max).join(' ') + '...';
+  }
+});
+
 module.exports = app;
 

@@ -7,14 +7,18 @@
         <% results.forEach(function(tweet){ %>
             <li class="feed-item group">
                 <div class="feed-video">
-                    <div class="feed-video-thumb"><img src="<%= tweet.video.thumb %>"></div>
-                    <div class="feed-video-title"><h2><%= tweet.video.title %></h2></div>
-                    <div class="feed-video-description"><%= tweet.video.description %></div>
-                    <div class="feed-tweet">
-                        <div class="feed-tweet-icon"><img src="<%= tweet.icon %>" height="48" width="48"></div> 
-                        <div class="feed-tweet-text"><a class="name" href="http://www.twitter.com/<%= tweet.user %>">@<%= tweet.user %></a> <span class="text"><%- tweet.text %></span></div>
-                        <div class="feed-tweet-date"><a href="http://www.twitter.com/<%= tweet.user %>/status/<%= tweet.id %>"><%= tweet.date.toDateString() %></a></div>
-                    </div>
+                    <% if (tweet.video) { %>
+                        <div class="feed-video-thumb"><img src="<%= tweet.video.thumb %>"></div>
+                        <div class="feed-video-title"><h2><%= tweet.video.title %></h2></div>
+                        <div class="feed-video-description"><%= truncate(tweet.video.description, 140) %></div>
+                        <div class="feed-tweet">
+                            <div class="feed-tweet-icon"><img src="<%= tweet.icon %>" height="48" width="48"></div> 
+                            <div class="feed-tweet-text"><a class="name" href="http://www.twitter.com/<%= tweet.user %>">@<%= tweet.user %></a> <span class="text"><%- tweet.text %></span></div>
+                            <div class="feed-tweet-date"><a href="http://www.twitter.com/<%= tweet.user %>/status/<%= tweet.id %>"><%= tweet.date.toDateString() %></a></div>
+                        </div>
+                    <% } else { %>
+                        <p>Video not found for <%= tweet._id %></p>
+                    <% } %>
                 </div>
             </li>
         <% }); %>
