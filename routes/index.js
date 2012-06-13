@@ -34,6 +34,6 @@ exports.feed = function(req, res, next){
     res.render('feed', { results: results });
   });
 
-  // feed.refresh();
+  feed.refresh();
 };
 
