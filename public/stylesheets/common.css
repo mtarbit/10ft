@@ -1,0 +1,114 @@
+
+body {
+    background: #090909;
+    color: #bbb;
+    font-size: 120%;
+    line-height: 27px;
+    text-shadow: 0 1px 3px #111;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    color: #fc0;
+}
+
+p, ul, ol {
+    margin-top: 0;
+}
+
+a {
+    color: #fc0;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+h1 {
+    margin: 0;
+    font-size: 72px;
+    line-height: 72px;
+}
+
+.group:before,
+.group:after {
+    content: "";
+    display: table;
+}
+
+.group:after {
+    clear: both;
+}
+
+.group {
+    zoom: 1; /* For IE 6/7 (trigger hasLayout) */
+}
+
+header {
+    position: fixed;
+    height: 72px;
+    width: 100%;
+    padding: 18px 72px;
+    background: #161616;
+    border-bottom: 5px solid #542;
+}
+
+section {
+    padding: 18px 72px;
+    padding-top: 146px;
+}
+
+.feed {
+    padding: 0;
+    list-style: none;
+}
+
+.feed-item {
+    margin-bottom: 36px;
+}
+
+.feed-video {
+    padding-left: 350px;
+    font-size: 20px;
+    margin-right: 18px;
+}
+
+.feed-video-thumb {
+    float: left;
+    margin-left: -350px;
+    margin-right: 20px;
+}
+
+.feed-video-thumb img {
+    border: 5px solid #542;
+    display: block;
+}
+
+.feed-video-title h2 {
+    font-size: 24px;
+    margin-bottom: 9px;
+}
+
+.feed-tweet {
+    margin-top: 16px;
+    font-size: 16px;
+    line-height: 22px;
+    color: #666;
+}
+
+.feed-tweet a {
+    color: #542;
+}
+
+.feed-tweet-icon {
+    float: left;
+    margin-right: 16px;
+}
+
+.feed-tweet-icon img {
+    border-radius: 5px;
+}
+
+.feed-tweet-date a {
+    font-size: 14px;
+    font-weight: normal;
+}
+
