@@ -7,4 +7,8 @@ var VideoSchema = new db.Schema({
   , description: String
 });
 
+VideoSchema.methods.getUrl = function(){
+    return "http://www.youtube.com/watch?v=" + this.id;
+};
+
 module.exports = db.model('Video', VideoSchema);

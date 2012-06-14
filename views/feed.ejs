@@ -5,11 +5,11 @@
 <section>
     <ul class="feed">
         <% results.forEach(function(tweet){ %>
-            <li class="feed-item group">
+            <li class="feed-item group" data-video-id="<%= tweet.video.id %>">
                 <div class="feed-video">
                     <% if (tweet.video) { %>
-                        <div class="feed-video-thumb"><img src="<%= tweet.video.thumb %>"></div>
-                        <div class="feed-video-title"><h2><%= tweet.video.title %></h2></div>
+                        <div class="feed-video-thumb"><a href="<%= tweet.video.getUrl() %>"><img src="<%= tweet.video.thumb %>"></a></div>
+                        <div class="feed-video-title"><h2><a href="<%= tweet.video.getUrl() %>"><%= tweet.video.title %></a></h2></div>
                         <div class="feed-video-description"><%= truncate(tweet.video.description, 140) %></div>
                         <div class="feed-tweet">
                             <div class="feed-tweet-icon"><img src="<%= tweet.icon %>" height="48" width="48"></div> 
