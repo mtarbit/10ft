@@ -88,4 +88,10 @@ $(function(){
 
 function onYouTubePlayerReady() {
   feed.player = $('#' + feed.playerId);
+  feed.player.get(0).addEventListener('onStateChange', 'onYouTubePlayerStateChange');
 }
+
+function onYouTubePlayerStateChange(state) {
+  if (state == 0) feed.stop();
+}
+
