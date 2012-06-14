@@ -7,6 +7,7 @@ feed.init = function(){
   this.items = this.container.find('.feed-item');
   this.items.on('click', this.itemClickHandler).css({ cursor: 'pointer' });
   this.initPlayer();
+  this.initKeyboard();
 };
 
 feed.initPlayer = function(){
@@ -21,13 +22,53 @@ feed.initPlayer = function(){
   swfobject.embedSWF(feed.CHROMELESS_PLAYER_URL, this.playerDivId, '100%', '100%', '8', null, null, parameters, attributes);
 };
 
+feed.initKeyboard = function(){
+  var keys = {
+      37: 'lt'
+    , 39: 'rt'
+    , 38: 'up'
+    , 40: 'dn'
+    , 27: 'esc'
+    , 32: 'space'
+    , 13: 'enter'
+  };
+
+  $(document).on('keydown', function(e){
+    var key = keys[e.which];
+    var caught = true;
+
+    switch (key) {
+
+      case 'lt':    break;
+      case 'rt':    break;
+      case 'up':    break;
+      case 'dn':    break;
+      case 'esc':   feed.stop();  break;
+      case 'space': feed.pause(); break;
+      case 'enter': break;
+
+      default:
+        caught = false;
+        break;
+
+    }
+
+    if (caught) e.preventDefault();
+  });
+}
+
 feed.play = function(id){
   this.player.css({ left: 0 });
   this.player.get(0).loadVideoById(id);
 };
 
 feed.pause = function(){
-  this.player.get(0).pauseVideo();
+  var p = this.player.get(0);
+  if (p.getPlayerState() == 2) {
+    p.playVideo();
+  } else {
+    p.pauseVideo();
+  }
 };
 
 feed.stop = function(){
