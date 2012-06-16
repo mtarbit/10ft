@@ -1,13 +1,50 @@
+var KEYS = {
+    37: 'lt'
+  , 39: 'rt'
+  , 38: 'up'
+  , 40: 'dn'
+  , 27: 'esc'
+  , 32: 'space'
+  , 13: 'enter'
+};
 
 // Feed - list of video thumbs
 
 var feed = {};
 
 feed.init = function(){
+  this.initDom();
+  this.initKeyboard();
+};
+
+feed.initDom = function(){
   this.container = $('.feed');
   this.items = this.container.find('.feed-item');
   this.items.on('click', this.itemClickHandler).css({ cursor: 'pointer' });
 };
+
+feed.initKeyboard = function(){
+  $(document).on('keydown', function(e){
+    var key = KEYS[e.which];
+    var caught = true;
+
+    switch (key) {
+      case 'lt':    break;
+      case 'rt':    break;
+      case 'up':    break;
+      case 'dn':    break;
+      case 'esc':   break;
+      case 'space': break;
+      case 'enter': break;
+
+      default:
+        caught = false;
+        break;
+    }
+
+    if (caught) e.preventDefault();
+  });
+}
 
 feed.itemClickHandler = function(e){
   var id = $(this).data('video-id');
@@ -58,18 +95,8 @@ player.getDom = function(){
 }
 
 player.initKeyboard = function(){
-  var keys = {
-      37: 'lt'
-    , 39: 'rt'
-    , 38: 'up'
-    , 40: 'dn'
-    , 27: 'esc'
-    , 32: 'space'
-    , 13: 'enter'
-  };
-
   $(document).on('keydown', function(e){
-    var key = keys[e.which];
+    var key = KEYS[e.which];
     var caught = true;
 
     switch (key) {
