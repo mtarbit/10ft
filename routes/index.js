@@ -26,7 +26,7 @@ exports.show = function(req, res, next){
 };
 
 exports.feed = function(req, res, next){
-  var Tweet = require(appRoot + '/models/Tweet')
+  var Tweet = require(appRoot + '/models/tweet')
     , feed = require(appRoot + '/lib/feed');
 
   Tweet.find().populate('video').desc('id').limit(50).run(function(err, results){
