@@ -1,10 +1,14 @@
+* {
+  cursor: none;
+}
 
 body {
     background: #090909;
     color: #bbb;
-    font-size: 120%;
-    line-height: 27px;
+    font-size: 24px;
+    line-height: 32px;
     text-shadow: 0 -1px 3px #000;
+    overflow: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -44,16 +48,17 @@ h1 {
 
 header {
     position: fixed;
-    height: 72px;
+    height: 74px;
     width: 100%;
-    padding: 18px 72px;
-    background: #191919;
-    border-bottom: 5px solid #542;
+    padding: 24px 96px;
+    background: #000;
+    text-transform: uppercase;
+    box-shadow: 0 0 32px rgba(255, 255, 255, 0.3)
 }
 
 section {
     padding: 18px 72px;
-    padding-top: 146px;
+    padding-top: 158px;
 }
 
 .feed {
@@ -62,13 +67,24 @@ section {
 }
 
 .feed-item {
-    margin-bottom: 36px;
+    margin-bottom: 12px;
+    padding: 24px;
+    border-radius: 9px;
+}
+
+.feed-item.selected {
+    background: #000;
+    box-shadow: 0 0 32px rgba(255, 255, 255, 0.3);
 }
 
 .feed-video {
     padding-left: 350px;
-    font-size: 20px;
     margin-right: 18px;
+}
+
+.feed-video-title h2 {
+    font-size: 32px;
+    margin-bottom: 9px;
 }
 
 .feed-video-thumb {
@@ -82,20 +98,13 @@ section {
     display: block;
 }
 
-.feed-video-title h2 {
-    font-size: 24px;
-    margin-bottom: 9px;
-}
-
 .feed-tweet {
     margin-top: 16px;
-    font-size: 16px;
-    line-height: 22px;
-    color: #666;
+    color: #777;
 }
 
 .feed-tweet a {
-    color: #542;
+    color: #653;
 }
 
 .feed-tweet-icon {
@@ -108,7 +117,7 @@ section {
 }
 
 .feed-tweet-date a {
-    font-size: 14px;
+    font-size: 20px;
     font-weight: normal;
 }
 
