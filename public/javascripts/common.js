@@ -1,4 +1,9 @@
-var KEYS = {
+
+// Util - generic bits & pieces
+
+var util = {};
+
+util.KEYS = {
     37: 'lt'
   , 39: 'rt'
   , 38: 'up'
@@ -6,6 +11,14 @@ var KEYS = {
   , 27: 'esc'
   , 32: 'space'
   , 13: 'enter'
+  , 74: 'j'
+  , 75: 'k'
+};
+
+util.clamp = function(n, min, max){
+  if (n < min) n = max;
+  if (n > max) n = min;
+  return n;
 };
 
 // Feed - list of video thumbs
@@ -19,36 +32,79 @@ feed.init = function(){
 
 feed.initDom = function(){
   this.container = $('.feed');
+
   this.items = this.container.find('.feed-item');
-  this.items.on('click', this.itemClickHandler).css({ cursor: 'pointer' });
+  this.items.on('click', this.itemClickHandler);
+
+  this.select(0);
 };
 
 feed.initKeyboard = function(){
+  var self = this;
+
   $(document).on('keydown', function(e){
-    var key = KEYS[e.which];
+    if (player.active || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return true;
+
+    var key = util.KEYS[e.which];
     var caught = true;
 
     switch (key) {
-      case 'lt':    break;
-      case 'rt':    break;
-      case 'up':    break;
-      case 'dn':    break;
-      case 'esc':   break;
-      case 'space': break;
-      case 'enter': break;
+      case 'lt':
+      case 'up':
+      case 'k':
+        self.prev();
+        break;
+
+      case 'rt':
+      case 'dn':
+      case 'j':
+        self.next();
+        break;
+
+      case 'space':
+      case 'enter':
+        self.play();
+        break;
 
       default:
         caught = false;
         break;
     }
 
-    if (caught) e.preventDefault();
+    if (caught) e.stopImmediatePropagation();
   });
-}
+};
+
+feed.next = function(){
+  this.select(this.n + 1);
+};
+
+feed.prev = function(){
+  this.select(this.n - 1);
+};
+
+feed.select = function(n){
+  this.n = util.clamp(n, 0, this.items.length - 1);
+
+  this.items.removeClass('selected');
+
+  var item = this.items.eq(this.n);
+  item.addClass('selected');
+
+  var top = item.position().top;
+  var pad = parseInt(item.closest('section').css('paddingTop'), 10);
+
+  $('body').animate({ scrollTop: top - pad }, 300);
+};
+
+feed.play = function(){
+  var id = this.items.eq(this.n).data('video-id');
+  if (id) player.play(id);
+};
 
 feed.itemClickHandler = function(e){
-  var id = $(this).data('video-id');
-  if (id) player.play(id);
+  feed.select(feed.items.index(this));
+  feed.play();
   e.preventDefault();
 };
 
@@ -57,6 +113,7 @@ feed.itemClickHandler = function(e){
 var player = {};
 
 player.CHROMELESS_PLAYER_URL = "http://www.youtube.com/apiplayer?enablejsapi=1&version=3";
+player.active = false;
 
 player.init = function(){
   this.initCallbacks();
@@ -84,7 +141,7 @@ player.initCallbacks = function(){
   }
 
   window.onYouTubePlayerStateChange = function(state) {
-    if (state == self.api.STATES.finished) self.stop();
+    if (state == self.api.STATES.ended) self.stop();
   }
 };
 
@@ -95,29 +152,29 @@ player.getDom = function(){
 }
 
 player.initKeyboard = function(){
+  var self = this;
+
   $(document).on('keydown', function(e){
-    var key = KEYS[e.which];
+    if (!self.active || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return true;
+
+    var key = util.KEYS[e.which];
     var caught = true;
 
     switch (key) {
-      case 'lt':    break;
-      case 'rt':    break;
-      case 'up':    break;
-      case 'dn':    break;
-      case 'esc':   player.stop();  break;
-      case 'space': player.pause(); break;
-      case 'enter': break;
+      case 'esc':   self.stop();  break;
+      case 'space': self.pause(); break;
 
       default:
         caught = false;
         break;
     }
 
-    if (caught) e.preventDefault();
+    if (caught) e.stopImmediatePropagation();
   });
 }
 
 player.play = function(id){
+  this.active = true;
   this.dom.css({ left: 0 });
   this.api.load(id);
 };
@@ -131,13 +188,23 @@ player.pause = function(){
 };
 
 player.stop = function(){
+  this.active = false;
   this.dom.css({ left: '-100%' });
   this.api.pause();
 };
 
+// YouTube Chromeless Player API
+// https://developers.google.com/youtube/js_api_reference
+
 var api = player.api = {};
 
-api.STATES = { 'finished':0, 'paused':2 };
+api.STATES = {
+    'unstarted': -1
+  , 'ended':      0
+  , 'playing':    1
+  , 'paused':     2
+  , 'buffering':  3
+};
 
 api.init = function(){ this.dom = player.dom.get(0); }
 api.load = function(id){ this.dom.loadVideoById(id); }
